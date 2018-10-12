@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 
+// ReSharper disable once CheckNamespace
 namespace EntityFrameworkCore.Extensions
 {
     public static class StringExtensions
