@@ -15,7 +15,7 @@ jobs:
 
   - task: PublishTestResults@2
     inputs:
-      testRunner: VSTest®
+      testRunner: VSTest
       testResultsFiles: '**/*.trx'
     condition: succeededOrFailed()
 
