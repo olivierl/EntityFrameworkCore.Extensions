@@ -1,4 +1,4 @@
-[![Build Status](https://dev.azure.com/capraibex/OpenSource/_apis/build/status/EntityFrameworkCore.Extensions)](https://dev.azure.com/capraibex/OpenSource/_build/latest?definitionId=26)
+[![pipeline status](https://gitlab.com/olivierl/entityframeworkcore-extensions/badges/master/pipeline.svg)](https://gitlab.com/olivierl/entityframeworkcore-extensions/commits/master)
 
 # EntityFrameworkCore.Extensions
 
