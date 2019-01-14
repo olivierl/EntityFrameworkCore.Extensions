@@ -23,8 +23,8 @@ namespace EntityFrameworkCore.Extensions
                     ContractResolver = new CamelCasePropertyNamesContractResolver(),
                     DateFormatHandling = DateFormatHandling.IsoDateFormat
                 };
-                settings.Converters.Add(new StringEnumConverter {CamelCaseText = true});
-
+                settings.Converters.Add(new StringEnumConverter {NamingStrategy = new CamelCaseNamingStrategy()});
+                    
                 return settings;
             }
         }
