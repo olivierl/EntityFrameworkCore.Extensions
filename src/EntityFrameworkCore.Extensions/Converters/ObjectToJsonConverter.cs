@@ -1,7 +1,6 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 
 namespace EntityFrameworkCore.Extensions
 {
@@ -9,24 +8,16 @@ namespace EntityFrameworkCore.Extensions
     {
         public ObjectToJsonConverter()
             : base(
-                obj => JsonConvert.SerializeObject(obj, SerializerSettings),
-                json => JsonConvert.DeserializeObject<T>(json))
+                obj => JsonSerializer.Serialize(obj, SerializerOptions),
+                convertFromProviderExpression: json => JsonSerializer.Deserialize<T>(json, SerializerOptions))
         {
         }
 
-        private static JsonSerializerSettings SerializerSettings
-        {
-            get
+        private static JsonSerializerOptions SerializerOptions =>
+            new JsonSerializerOptions
             {
-                var settings = new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    DateFormatHandling = DateFormatHandling.IsoDateFormat
-                };
-                settings.Converters.Add(new StringEnumConverter {NamingStrategy = new CamelCaseNamingStrategy()});
-                    
-                return settings;
-            }
-        }
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters = {new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)}
+            };
     }
 }

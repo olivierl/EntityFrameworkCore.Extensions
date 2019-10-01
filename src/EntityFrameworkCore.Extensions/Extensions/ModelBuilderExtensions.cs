@@ -10,23 +10,23 @@ namespace Microsoft.EntityFrameworkCore
         {
             foreach(var entity in modelBuilder.Model.GetEntityTypes())
             {
-                entity.Relational().TableName = entity.Relational().TableName.ToSnakeCase();
+                entity.SetTableName(entity.GetTableName().ToSnakeCase());
 
                 entity.GetProperties()
                     .ToList()
-                    .ForEach(p => p.Relational().ColumnName = p.Relational().ColumnName.ToSnakeCase());
+                    .ForEach(p => p.SetColumnName(p.GetColumnName().ToSnakeCase()));
 
                 entity.GetKeys()
                     .ToList()
-                    .ForEach(k => k.Relational().Name = k.Relational().Name.ToSnakeCase());
+                    .ForEach(k => k.SetName(k.GetName().ToSnakeCase()));
 
                 entity.GetForeignKeys()
                     .ToList()
-                    .ForEach(k => k.Relational().Name = k.Relational().Name.ToSnakeCase());
+                    .ForEach(k => k.SetConstraintName(k.GetConstraintName().ToSnakeCase()));
 
                 entity.GetIndexes()
                     .ToList()
-                    .ForEach(i => i.Relational().Name = i.Relational().Name.ToSnakeCase());
+                    .ForEach(i => i.SetName(i.GetName().ToSnakeCase()));
             }
         }
     }
