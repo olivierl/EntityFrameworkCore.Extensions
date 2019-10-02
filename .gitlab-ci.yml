@@ -19,7 +19,7 @@ pack:
   tags:
     - docker
   script:
-    - dotnet pack -c Release -o ../../dist /p:Version=$CI_COMMIT_REF_NAME
+    - dotnet pack -c Release -o dist /p:Version=$CI_COMMIT_REF_NAME
   artifacts:
     name: nugets
     paths:
