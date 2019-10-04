@@ -1,4 +1,4 @@
-image: microsoft/dotnet:2.2-sdk-alpine
+image: mcr.microsoft.com/dotnet/core/sdk:3.0
 
 stages:
   - test
@@ -19,7 +19,7 @@ pack:
   tags:
     - docker
   script:
-    - dotnet pack -c Release -o ../../dist /p:Version=$CI_COMMIT_REF_NAME
+    - dotnet pack -c Release -o dist /p:Version=$CI_COMMIT_REF_NAME
   artifacts:
     name: nugets
     paths:
