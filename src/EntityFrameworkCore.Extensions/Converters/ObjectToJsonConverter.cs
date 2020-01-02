@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+// ReSharper disable once CheckNamespace
 namespace EntityFrameworkCore.Extensions
 {
     public class ObjectToJsonConverter<T> : ValueConverter<T, string>

@@ -9,27 +9,39 @@ namespace EntityFrameworkCore.Extensions
     // ReSharper disable once InconsistentNaming
     public static class IQueryableExtensions
     {
+        public static IQueryable<T> ApplyOrdering<T>(this IQueryable<T> query, string sortBy, bool sortDescending,
+            Dictionary<string, Expression<Func<T, object>>> columnsMap)
+        {
+            if (string.IsNullOrWhiteSpace(sortBy) || !columnsMap.ContainsKey(sortBy))
+                return query;
+
+            return sortDescending
+                ? query.OrderByDescending(columnsMap[sortBy])
+                : query.OrderBy(columnsMap[sortBy]);
+        }
+
         public static IQueryable<T> ApplyOrdering<T>(this IQueryable<T> query, ISortable sortableObject,
             Dictionary<string, Expression<Func<T, object>>> columnsMap)
         {
-            if (string.IsNullOrWhiteSpace(sortableObject.SortBy) || !columnsMap.ContainsKey(sortableObject.SortBy))
-                return query;
-
-            return sortableObject.IsSortAscending
-                ? query.OrderBy(columnsMap[sortableObject.SortBy])
-                : query.OrderByDescending(columnsMap[sortableObject.SortBy]);
+            return ApplyOrdering(query, sortableObject.SortBy, !sortableObject.IsSortAscending, columnsMap);
         }
 
-        public static IQueryable<T> ApplyPaging<T>(this IQueryable<T> query, IPageable pageableObject,
-            int defaultPageSize = 50)
+        public static IQueryable<T> ApplyPaging<T>(this IQueryable<T> query, int page, int pageSize)
         {
-            if (pageableObject.Page <= 0)
-                pageableObject.Page = 1;
+            if (page <= 0)
+                page = 1;
 
-            if (pageableObject.PageSize <= 0)
-                pageableObject.PageSize = defaultPageSize;
+            if (pageSize <= 0)
+                pageSize = 1000;
 
-            return query.Skip((pageableObject.Page - 1) * pageableObject.PageSize).Take(pageableObject.PageSize);
+            return query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
+        }
+
+        public static IQueryable<T> ApplyPaging<T>(this IQueryable<T> query, IPageable pageableObject)
+        {
+            return ApplyPaging(query, pageableObject.Page, pageableObject.PageSize);
         }
     }
 }
