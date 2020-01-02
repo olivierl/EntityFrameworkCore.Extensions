@@ -70,16 +70,10 @@ namespace EntityFrameworkCore.Extensions.Tests
                     await context.SaveChangesAsync();
                 });
 
-                var queryObject = new QueryObject
-                {
-                    SortBy = "title",
-                    IsSortAscending = false
-                };
-
-                using (var context = new TodoContext(options))
+                await using (var context = new TodoContext(options))
                 {
                     var result = await context.Todos.AsQueryable()
-                        .ApplyOrdering(queryObject, ColumnsMap)
+                        .ApplyOrdering("title", true, ColumnsMap)
                         .ToListAsync();
 
                     Assert.Equal(5, result.Count);
@@ -95,30 +89,28 @@ namespace EntityFrameworkCore.Extensions.Tests
         [Fact]
         public async Task ApplyOrdering_ReturnTodosWhenUnknowColumn()
         {
-            using (var testDb = new TestDatabase<TodoContext>())
+            using var testDb = new TestDatabase<TodoContext>();
+            var todos = TodoFactory.GetTodos();
+
+            var options = await testDb.InitializeAsync(async context =>
             {
-                var todos = TodoFactory.GetTodos();
+                context.Todos.AddRange(todos);
+                await context.SaveChangesAsync();
+            });
 
-                var options = await testDb.InitializeAsync(async context =>
-                {
-                    context.Todos.AddRange(todos);
-                    await context.SaveChangesAsync();
-                });
+            var queryObject = new QueryObject
+            {
+                SortBy = "unknown",
+                IsSortAscending = true
+            };
 
-                var queryObject = new QueryObject
-                {
-                    SortBy = "unknown",
-                    IsSortAscending = true
-                };
+            await using (var context = new TodoContext(options))
+            {
+                var result = await context.Todos.AsQueryable()
+                    .ApplyOrdering(queryObject, ColumnsMap)
+                    .ToListAsync();
 
-                using (var context = new TodoContext(options))
-                {
-                    var result = await context.Todos.AsQueryable()
-                        .ApplyOrdering(queryObject, ColumnsMap)
-                        .ToListAsync();
-
-                    Assert.Equal(5, result.Count);
-                }
+                Assert.Equal(5, result.Count);
             }
         }
 
@@ -159,70 +151,58 @@ namespace EntityFrameworkCore.Extensions.Tests
         [Fact]
         public async Task FindAsync_Paginate_ReturnsPage2()
         {
-            using (var testDb = new TestDatabase<TodoContext>())
+            using var testDb = new TestDatabase<TodoContext>();
+            var todos = TodoFactory.GetTodos();
+
+            var options = await testDb.InitializeAsync(async context =>
             {
-                var todos = TodoFactory.GetTodos();
+                context.Todos.AddRange(todos);
+                await context.SaveChangesAsync();
+            });
 
-                var options = await testDb.InitializeAsync(async context =>
-                {
-                    context.Todos.AddRange(todos);
-                    await context.SaveChangesAsync();
-                });
+            await using (var context = new TodoContext(options))
+            {
+                var result = await context.Todos.AsQueryable()
+                    .ApplyOrdering("id", false, ColumnsMap)
+                    .ApplyPaging(2, 3)
+                    .ToListAsync();
 
-                var queryObject = new QueryObject
-                {
-                    SortBy = "id",
-                    IsSortAscending = true,
-                    Page = 2,
-                    PageSize = 3
-                };
-
-                using (var context = new TodoContext(options))
-                {
-                    var result = await context.Todos.AsQueryable()
-                        .ApplyOrdering(queryObject, ColumnsMap)
-                        .ApplyPaging(queryObject)
-                        .ToListAsync();
-
-                    Assert.Equal(2, result.Count);
-                    Assert.Equal(4, result.First().Id);
-                    Assert.Equal(5, result.Last().Id);
-                }
+                Assert.Equal(2, result.Count);
+                Assert.Equal(4, result.First().Id);
+                Assert.Equal(5, result.Last().Id);
             }
         }
 
         [Fact]
         public async Task FindAsync_PaginateWithWrongData_ReturnsDefault()
         {
-            using (var testDb = new TestDatabase<TodoContext>())
+            using var testDb = new TestDatabase<TodoContext>();
+            var todos = TodoFactory.GetTodos();
+
+            var options = await testDb.InitializeAsync(async context =>
             {
-                var todos = TodoFactory.GetTodos();
+                context.Todos.AddRange(todos);
+                await context.SaveChangesAsync();
+            });
 
-                var options = await testDb.InitializeAsync(async context =>
-                {
-                    context.Todos.AddRange(todos);
-                    await context.SaveChangesAsync();
-                });
+            var queryObject = new QueryObject
+            {
+                SortBy = "id",
+                IsSortAscending = true,
+                Page = 0,
+                PageSize = 0
+            };
 
-                var queryObject = new QueryObject
-                {
-                    SortBy = "id",
-                    IsSortAscending = true,
-                    Page = 0,
-                    PageSize = 0
-                };
+            await using (var context = new TodoContext(options))
+            {
+                var result = await context.Todos.AsQueryable()
+                    .ApplyOrdering(queryObject, ColumnsMap)
+                    .ApplyPaging(queryObject)
+                    .ToListAsync();
 
-                using (var context = new TodoContext(options))
-                {
-                    var result = await context.Todos.AsQueryable()
-                        .ApplyOrdering(queryObject, ColumnsMap)
-                        .ApplyPaging(queryObject)
-                        .ToListAsync();
-
-                    Assert.Equal(5, result.Count);
-                    Assert.Equal(1, result.First().Id);
-                    Assert.Equal(5, result.Last().Id);
-                }
+                Assert.Equal(5, result.Count);
+                Assert.Equal(1, result.First().Id);
+                Assert.Equal(5, result.Last().Id);
             }
         }
     }

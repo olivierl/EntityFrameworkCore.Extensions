@@ -22,13 +22,13 @@ namespace EntityFrameworkCore.Testing
                 .Options;
             
             // Create the schema in the database
-            using (var context = (TContext)Activator.CreateInstance(typeof(TContext), options))
+            await using (var context = (TContext)Activator.CreateInstance(typeof(TContext), options))
             {
                 context.Database.EnsureCreated();
             }
 
             // Insert seed data into the database using one instance of the context
-            using (var context = (TContext)Activator.CreateInstance(typeof(TContext), options))
+            await using (var context = (TContext)Activator.CreateInstance(typeof(TContext), options))
             {
                 await seeder?.Invoke(context);
             }
