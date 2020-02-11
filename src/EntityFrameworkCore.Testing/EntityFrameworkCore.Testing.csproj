@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>OlivierL.EntityFrameworkCore.Testing</PackageId>
     <Authors>OlivierL</Authors>
     <Description>EntityFrameworkCore Testing Tools</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>Copyright 2018 (c) Olivier Lambeaux. All rights reserved.</Copyright>
     <PackageTags>entityframework core test</PackageTags>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.0" />
