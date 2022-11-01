@@ -15,22 +15,22 @@ namespace EntityFrameworkCore.Testing
             Connection.Open();
         }
 
-        public async Task<DbContextOptions<TContext>> InitializeAsync(Func<TContext, Task> seeder = null)
+        public async Task<DbContextOptions<TContext>> InitializeAsync(Func<TContext, Task>? seeder = null)
         {
             var options = new DbContextOptionsBuilder<TContext>()
                 .UseSqlite(Connection)
                 .Options;
             
             // Create the schema in the database
-            using (var context = (TContext)Activator.CreateInstance(typeof(TContext), options))
+            await using (var context = (TContext)Activator.CreateInstance(typeof(TContext), options)!)
             {
-                context.Database.EnsureCreated();
+                await context.Database.EnsureCreatedAsync();
             }
 
             // Insert seed data into the database using one instance of the context
-            using (var context = (TContext)Activator.CreateInstance(typeof(TContext), options))
+            await using (var context = (TContext)Activator.CreateInstance(typeof(TContext), options)!)
             {
-                await seeder?.Invoke(context);
+                await seeder?.Invoke(context)!;
             }
 
             return options;
