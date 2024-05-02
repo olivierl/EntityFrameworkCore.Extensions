@@ -14,7 +14,7 @@ namespace Microsoft.EntityFrameworkCore
 
                 entity.GetProperties()
                     .ToList()
-                    .ForEach(p => p.SetColumnName(p.Name.ToSnakeCase()));
+                    .ForEach(p => p.SetColumnName(p.GetColumnBaseName().ToSnakeCase()));
 
                 entity.GetKeys()
                     .ToList()
@@ -26,7 +26,7 @@ namespace Microsoft.EntityFrameworkCore
 
                 entity.GetIndexes()
                     .ToList()
-                    .ForEach(i => i.SetDatabaseName(i.Name!.ToSnakeCase()));
+                    .ForEach(i => i.SetDatabaseName(i.GetDatabaseName().ToSnakeCase()));
             }
         }
     }
